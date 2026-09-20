@@ -88,6 +88,7 @@
       timerId: null,
       accepting: true,
       advanceTimer: null,
+      phase: "ready",
     };
 
     function show(screen) {
@@ -98,6 +99,20 @@
         "playfield-review",
         screen === els.done
       );
+    }
+
+    function setDoneControls(armed) {
+      const confirmRow = document.getElementById("done-confirm");
+      const restartRow = document.getElementById("done-restart");
+      if (confirmRow) confirmRow.hidden = armed;
+      if (restartRow) restartRow.hidden = !armed;
+    }
+
+    function armRestart() {
+      if (state.phase !== "done") return;
+      state.phase = "done-armed";
+      setDoneControls(true);
+      window.setTimeout(() => document.body.focus(), 0);
     }
 
     function score() {
@@ -208,9 +223,14 @@
         els.ticketMessage.textContent = `You earned ${tickets} tickets. Wave Mrs. West over!`;
       }
       renderReview();
+      state.phase = "done";
+      setDoneControls(false);
       show(els.done);
       if (tickets > 0) burstConfetti(36 + tickets * 10);
       flashScreen();
+      window.setTimeout(() => {
+        document.querySelector("[data-action='confirm-score']")?.focus();
+      }, 0);
     }
 
     function tick() {
@@ -226,9 +246,11 @@
     }
 
     function start() {
+      if (state.phase === "done") return;
       window.clearInterval(state.timerId);
       window.clearTimeout(state.advanceTimer);
       state.running = true;
+      state.phase = "play";
       state.remaining = duration;
       state.correct = 0;
       state.incorrect = 0;
@@ -284,6 +306,9 @@
         if (event.key === "Enter" || event.key === " ") {
           const tag = document.activeElement?.tagName;
           if (tag === "A" || tag === "BUTTON") return;
+          if (state.phase !== "ready" && state.phase !== "done-armed") {
+            return;
+          }
           event.preventDefault();
           start();
         }
@@ -315,11 +340,17 @@
     document.querySelectorAll("[data-action='start']").forEach((node) => {
       node.addEventListener("click", start);
     });
+    document.querySelectorAll("[data-action='confirm-score']").forEach((node) => {
+      node.addEventListener("click", armRestart);
+    });
     document.querySelectorAll("[data-action='again']").forEach((node) => {
-      node.addEventListener("click", start);
+      node.addEventListener("click", () => {
+        if (state.phase === "done-armed") start();
+      });
     });
 
     show(els.ready);
+    setDoneControls(false);
     renderHud();
     window.setTimeout(() => document.body.focus(), 0);
 

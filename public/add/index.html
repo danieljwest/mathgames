@@ -104,9 +104,15 @@
               <h3>Your round</h3>
               <ul class="review-list" id="review-list"></ul>
             </div>
-            <div class="cta-row">
+            <div class="cta-row" id="done-confirm">
+              <button class="btn btn-primary" type="button" data-action="confirm-score">
+                I've got my score
+              </button>
+              <a class="btn btn-ghost" href="/">Home</a>
+            </div>
+            <div class="cta-row" id="done-restart" hidden>
               <button class="btn btn-primary" type="button" data-action="again">
-                Play again (Enter)
+                Press Enter to play again
               </button>
               <a class="btn btn-ghost" href="/">Home</a>
             </div>
