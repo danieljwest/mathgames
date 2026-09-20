@@ -61,7 +61,9 @@
             </div>
           </section>
           <section class="screen" id="screen-play">
+            <div class="problem-rail problem-rail-past" id="rail-past" aria-live="polite"></div>
             <div class="problem" id="prompt" aria-live="polite">7 × 8</div>
+            <div class="problem-rail problem-rail-next" id="rail-next" aria-live="polite"></div>
             <label class="visually-hidden" for="answer">Your answer</label>
             <input
               class="answer"
@@ -72,8 +74,7 @@
               spellcheck="false"
               aria-label="Your answer"
             />
-            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · grey list below shows recent answers and the next five</p>
-            <div class="problem-rail" id="problem-rail" aria-live="polite"></div>
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span></p>
           </section>
 
 <section class="screen" id="screen-done">

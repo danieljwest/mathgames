@@ -64,8 +64,10 @@
       done: document.getElementById("screen-done"),
       prompt: document.getElementById("prompt"),
       answer: document.getElementById("answer"),
-      upcoming: document.getElementById("problem-rail"),
-      railTrack: null,
+      pastRail: document.getElementById("rail-past"),
+      nextRail: document.getElementById("rail-next"),
+      pastTrack: null,
+      nextTrack: null,
       reviewList: document.getElementById("review-list"),
       timer: document.getElementById("stat-timer"),
       correct: document.getElementById("stat-correct"),
@@ -139,70 +141,82 @@
       els.timer.classList.toggle("urgent", state.running && state.remaining <= 10);
     }
 
-    function buildRailItems() {
-      const past = state.history.slice(-PAST_VISIBLE).reverse();
-      const next = state.queue.slice(1, 1 + lookahead);
-      return [
-        ...past.map((entry) => ({
-          kind: "past",
-          ok: entry.ok,
-          text: entry.ok
-            ? `${entry.prompt} = ${entry.given}`
-            : `${entry.prompt} ≠ ${entry.given}`,
-        })),
-        ...next.map((problem) => ({
-          kind: "next",
-          text: problem.prompt,
-        })),
-      ];
-    }
-
-    function paintRail(items) {
-      if (!els.upcoming) return;
-      els.upcoming.innerHTML = "";
+    function paintTrack(container, items, trackKey) {
+      if (!container) return;
+      container.innerHTML = "";
+      if (items.length === 0) {
+        state[trackKey] = null;
+        return;
+      }
       const track = document.createElement("div");
       track.className = "rail-track";
-      track.id = "rail-track";
       items.forEach((item, index) => {
         const row = document.createElement("div");
         row.className = `rail-item ${item.kind}${
           item.kind === "past" ? (item.ok ? " ok" : " bad") : ""
         }`;
         row.style.setProperty("--i", String(index));
-        if (item.kind === "past") {
-          row.innerHTML = `<span class="rail-mark" aria-hidden="true">${
-            item.ok ? "✓" : "✗"
-          }</span><span class="rail-text">${item.text}</span>`;
-        } else {
-          row.innerHTML = `<span class="rail-mark" aria-hidden="true">→</span><span class="rail-text">${item.text}</span>`;
-        }
+        const mark =
+          item.kind === "past" ? (item.ok ? "✓" : "✗") : "·";
+        row.innerHTML = `<span class="rail-mark" aria-hidden="true">${mark}</span><span class="rail-text">${item.text}</span>`;
         track.appendChild(row);
       });
-      els.upcoming.appendChild(track);
-      els.railTrack = track;
+      container.appendChild(track);
+      state[trackKey] = track;
     }
 
-    function renderRail({ animate = false } = {}) {
-      if (!els.upcoming) return;
-      const items = buildRailItems();
-      if (!animate || !els.railTrack || items.length === 0) {
-        paintRail(items);
+    function pastItems() {
+      return state.history.slice(-PAST_VISIBLE).map((entry) => ({
+        kind: "past",
+        ok: entry.ok,
+        text: entry.ok
+          ? `${entry.prompt} = ${entry.given}`
+          : `${entry.prompt} ≠ ${entry.given}`,
+      }));
+    }
+
+    function nextItems() {
+      return state.queue.slice(1, 1 + lookahead).map((problem) => ({
+        kind: "next",
+        text: problem.prompt,
+      }));
+    }
+
+    function shiftTrack(track, onDone) {
+      if (!track) {
+        onDone();
         return;
       }
-
-      const track = els.railTrack;
       const firstRow = track.querySelector(".rail-item");
-      const distance = firstRow ? firstRow.getBoundingClientRect().height + 8 : 40;
+      const distance = firstRow
+        ? firstRow.getBoundingClientRect().height + 8
+        : 40;
       track.style.transition = "none";
       track.style.transform = "translateY(0)";
       void track.offsetWidth;
       track.style.transition = "transform 180ms ease";
       track.classList.add("is-shifting");
       track.style.transform = `translateY(-${distance}px)`;
+      window.setTimeout(onDone, 180);
+    }
 
-      window.setTimeout(() => {
-        paintRail(items);
-      }, 180);
+    function renderRails({ animate = false } = {}) {
+      const past = pastItems();
+      const next = nextItems();
+      if (!animate) {
+        paintTrack(els.pastRail, past, "pastTrack");
+        paintTrack(els.nextRail, next, "nextTrack");
+        return;
+      }
+      let pending = 2;
+      const finish = () => {
+        pending -= 1;
+        if (pending > 0) return;
+        paintTrack(els.pastRail, past, "pastTrack");
+        paintTrack(els.nextRail, next, "nextTrack");
+      };
+      shiftTrack(state.pastTrack, finish);
+      shiftTrack(state.nextTrack, finish);
     }
 
     function renderProblem({ animateRail = false } = {}) {
@@ -211,7 +225,7 @@
       els.prompt.textContent = problem.prompt;
       els.answer.value = "";
       els.prompt.classList.remove("wrong", "right");
-      renderRail({ animate: animateRail });
+      renderRails({ animate: animateRail });
       state.accepting = true;
       els.answer.focus();
     }
