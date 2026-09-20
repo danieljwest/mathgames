@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integer Rush — Mrs. West Knows Best</title>
+    <meta name="description" content="60-second integer addition and subtraction. Keyboard only." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body class="game-page" tabindex="-1">
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/">Mrs. <span>West</span> Knows Best</a>
+        <p class="kbd-hint">
+          <span class="kbd">Enter</span> start · type answer · <span class="kbd">Enter</span> next ·
+          <span class="kbd">Esc</span> end early
+        </p>
+      </header>
+
+      <div class="stage">
+        <div class="hud">
+          <div class="panel stat">
+            <div class="stat-label">Time</div>
+            <div class="stat-value" id="stat-timer">60</div>
+          </div>
+          <div class="panel stat">
+            <div class="stat-label">Correct</div>
+            <div class="stat-value" id="stat-correct">0</div>
+          </div>
+          <div class="panel stat">
+            <div class="stat-label">Incorrect</div>
+            <div class="stat-value" id="stat-incorrect">0</div>
+          </div>
+          <div class="panel stat">
+            <div class="stat-label">Score</div>
+            <div class="stat-value" id="stat-score">0</div>
+          </div>
+        </div>
+
+        <div class="panel playfield">
+          <section class="screen active" id="screen-ready">
+            <h1>Integer Rush</h1>
+            <p class="lede">Add and subtract with positives and negatives. Same 60-second clock and ticket bands.</p>
+            <div class="cta-row">
+              <button class="btn btn-primary" type="button" data-action="start">
+                Press Enter to start
+              </button>
+              <a class="btn btn-ghost" href="/">Back home</a>
+            </div>
+          </section>
+          <section class="screen" id="screen-play">
+            <div class="problem-rail problem-rail-past" id="rail-past" aria-live="polite"></div>
+            <div class="problem" id="prompt" aria-live="polite">-4 + 9</div>
+            <div class="problem-rail problem-rail-next" id="rail-next" aria-live="polite"></div>
+            <label class="visually-hidden" for="answer">Your answer</label>
+            <input
+              class="answer"
+              id="answer"
+              inputmode="numeric"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-label="Your answer"
+            />
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · use <span class="kbd">-</span> for negatives</p>
+          </section>
+
+          <section class="screen" id="screen-done">
+            <h2>Time!</h2>
+            <div class="ticket-row" id="ticket-row" aria-hidden="true"></div>
+            <p class="lede" id="ticket-message">You earned tickets.</p>
+            <div class="results">
+              <div class="result-card">
+                Score
+                <strong id="final-score">0</strong>
+              </div>
+              <div class="result-card">
+                Correct
+                <strong id="final-correct">0</strong>
+              </div>
+              <div class="result-card">
+                Incorrect
+                <strong id="final-incorrect">0</strong>
+              </div>
+              <div class="result-card">
+                Tickets
+                <strong id="final-tickets">0</strong>
+              </div>
+              <div class="result-card" style="grid-column: span 2">
+                Finished at
+                <strong id="final-time">—</strong>
+              </div>
+            </div>
+            <div class="review">
+              <h3>Your round</h3>
+              <ul class="review-list" id="review-list"></ul>
+            </div>
+            <div class="cta-row">
+              <button class="btn btn-primary" type="button" data-action="again">
+                Play again
+              </button>
+              <a class="btn btn-ghost" href="/">Home</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+    </style>
+    <script src="/js/challenge.js"></script>
+    <script>
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function addPrompt(a, b) {
+        if (b < 0) return `${a} − ${Math.abs(b)}`;
+        return `${a} + ${b}`;
+      }
+
+      function subPrompt(a, b) {
+        if (b < 0) return `${a} + ${Math.abs(b)}`;
+        return `${a} − ${b}`;
+      }
+
+      MathGames.createChallenge({
+        duration: 60,
+        nextProblem() {
+          const a = randomInt(-12, 12);
+          const b = randomInt(-12, 12);
+          if (Math.random() < 0.55) {
+            return { prompt: addPrompt(a, b), answer: a + b };
+          }
+          return { prompt: subPrompt(a, b), answer: a - b };
+        },
+      });
+
+    </script>
+  </body>
+</html>

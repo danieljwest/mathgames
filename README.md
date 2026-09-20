@@ -7,6 +7,10 @@ Keyboard-first classroom math games for Mrs. West’s challenges. Live at [math.
 - **Multiply Blast** — facts through 12×12, 60 seconds
 - **Add Dash** — addition race with sums ≤ 100
 - **Factor Fill** — find the missing factor
+- **Integer Rush** — add/subtract with negatives
+- **Fair Share** — fraction of a whole number
+- **Mystery x** — one-step equations
+- **Percent Pop** — 10%, 25%, 50%, 75%, 100%
 
 Score is `correct − incorrect`. Tickets are awarded from that final score:
 
