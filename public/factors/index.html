@@ -61,7 +61,7 @@
             </div>
           </section>
 
-          <section class="screen" id="screen-play">
+                    <section class="screen" id="screen-play">
             <div class="problem" id="prompt" aria-live="polite">6 × ? = 42</div>
             <label class="visually-hidden" for="answer">Your answer</label>
             <input
@@ -73,10 +73,11 @@
               spellcheck="false"
               aria-label="Your answer"
             />
-            <p class="help">Type the missing number, then press <span class="kbd">Enter</span></p>
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · peek at <strong>Up next</strong> to stay ahead</p>
+            <div class="upcoming" id="upcoming" aria-live="polite"></div>
           </section>
 
-          <section class="screen" id="screen-done">
+<section class="screen" id="screen-done">
             <h2>Time!</h2>
             <div class="ticket-row" id="ticket-row" aria-hidden="true"></div>
             <p class="lede" id="ticket-message">You earned tickets.</p>
@@ -101,6 +102,10 @@
                 Finished at
                 <strong id="final-time">—</strong>
               </div>
+            </div>
+            <div class="review">
+              <h3>Your round</h3>
+              <ul class="review-list" id="review-list"></ul>
             </div>
             <div class="cta-row">
               <button class="btn btn-primary" type="button" data-action="again">

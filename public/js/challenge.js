@@ -6,6 +6,7 @@
     { min: 27, tickets: 2 },
     { min: 20, tickets: 1 },
   ];
+  const LOOKAHEAD = 2;
 
   function ticketsForCorrect(correct) {
     for (const band of TICKET_BANDS) {
@@ -55,12 +56,15 @@
 
   function createChallenge(config) {
     const duration = config.duration ?? 60;
+    const lookahead = config.lookahead ?? LOOKAHEAD;
     const els = {
       ready: document.getElementById("screen-ready"),
       play: document.getElementById("screen-play"),
       done: document.getElementById("screen-done"),
       prompt: document.getElementById("prompt"),
       answer: document.getElementById("answer"),
+      upcoming: document.getElementById("upcoming"),
+      reviewList: document.getElementById("review-list"),
       timer: document.getElementById("stat-timer"),
       correct: document.getElementById("stat-correct"),
       incorrect: document.getElementById("stat-incorrect"),
@@ -79,19 +83,35 @@
       remaining: duration,
       correct: 0,
       incorrect: 0,
-      current: null,
+      queue: [],
+      history: [],
       timerId: null,
       accepting: true,
+      advanceTimer: null,
     };
 
     function show(screen) {
       [els.ready, els.play, els.done].forEach((node) => {
         if (node) node.classList.toggle("active", node === screen);
       });
+      document.querySelector(".playfield")?.classList.toggle(
+        "playfield-review",
+        screen === els.done
+      );
     }
 
     function score() {
       return state.correct - state.incorrect;
+    }
+
+    function current() {
+      return state.queue[0] ?? null;
+    }
+
+    function fillQueue() {
+      while (state.queue.length < lookahead + 1) {
+        state.queue.push(config.nextProblem());
+      }
     }
 
     function renderHud() {
@@ -102,19 +122,68 @@
       els.timer.classList.toggle("urgent", state.running && state.remaining <= 10);
     }
 
-    function nextProblem() {
-      state.current = config.nextProblem();
-      els.prompt.textContent = state.current.prompt;
+    function renderUpcoming() {
+      if (!els.upcoming) return;
+      const next = state.queue.slice(1, 1 + lookahead);
+      els.upcoming.innerHTML = "";
+      if (next.length === 0) return;
+
+      const label = document.createElement("div");
+      label.className = "upcoming-label";
+      label.textContent = "Up next";
+      els.upcoming.appendChild(label);
+
+      const row = document.createElement("div");
+      row.className = "upcoming-row";
+      next.forEach((problem, index) => {
+        const item = document.createElement("div");
+        item.className = "upcoming-item";
+        item.style.setProperty("--i", String(index));
+        item.textContent = problem.prompt;
+        row.appendChild(item);
+      });
+      els.upcoming.appendChild(row);
+    }
+
+    function renderProblem() {
+      const problem = current();
+      if (!problem) return;
+      els.prompt.textContent = problem.prompt;
       els.answer.value = "";
       els.prompt.classList.remove("wrong", "right");
+      renderUpcoming();
       state.accepting = true;
       els.answer.focus();
+    }
+
+    function renderReview() {
+      if (!els.reviewList) return;
+      els.reviewList.innerHTML = "";
+      if (state.history.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "review-empty";
+        empty.textContent = "No answers this round.";
+        els.reviewList.appendChild(empty);
+        return;
+      }
+
+      state.history.forEach((entry) => {
+        const item = document.createElement("li");
+        item.className = `review-item ${entry.ok ? "ok" : "bad"}`;
+        const mark = entry.ok ? "✓" : "✗";
+        const detail = entry.ok
+          ? `${entry.prompt} = ${entry.given}`
+          : `${entry.prompt} → you ${entry.given}, answer ${entry.answer}`;
+        item.innerHTML = `<span class="review-mark" aria-hidden="true">${mark}</span><span class="review-detail">${detail}</span>`;
+        els.reviewList.appendChild(item);
+      });
     }
 
     function finish() {
       if (!state.running) return;
       state.running = false;
       window.clearInterval(state.timerId);
+      window.clearTimeout(state.advanceTimer);
       const endedAt = new Date();
       const tickets = ticketsForCorrect(state.correct);
       els.finalScore.textContent = String(score());
@@ -138,6 +207,7 @@
       } else {
         els.ticketMessage.textContent = `You earned ${tickets} tickets. Wave Mrs. West over!`;
       }
+      renderReview();
       show(els.done);
       if (tickets > 0) burstConfetti(36 + tickets * 10);
       flashScreen();
@@ -149,27 +219,45 @@
       if (state.remaining <= 0) finish();
     }
 
+    function advance() {
+      state.queue.shift();
+      fillQueue();
+      renderProblem();
+    }
+
     function start() {
+      window.clearInterval(state.timerId);
+      window.clearTimeout(state.advanceTimer);
       state.running = true;
       state.remaining = duration;
       state.correct = 0;
       state.incorrect = 0;
+      state.queue = [];
+      state.history = [];
+      fillQueue();
       renderHud();
       show(els.play);
-      nextProblem();
-      window.clearInterval(state.timerId);
+      renderProblem();
       state.timerId = window.setInterval(tick, 1000);
     }
 
     function submit() {
       if (!state.running || !state.accepting) return;
+      const problem = current();
+      if (!problem) return;
       const raw = els.answer.value.trim();
       if (raw === "") return;
       const value = Number(raw);
       if (!Number.isFinite(value)) return;
 
       state.accepting = false;
-      const ok = value === state.current.answer;
+      const ok = value === problem.answer;
+      state.history.push({
+        prompt: problem.prompt,
+        answer: problem.answer,
+        given: value,
+        ok,
+      });
       if (ok) {
         state.correct += 1;
         els.prompt.classList.add("right");
@@ -179,7 +267,8 @@
         els.prompt.classList.add("wrong");
       }
       renderHud();
-      window.setTimeout(nextProblem, ok ? 140 : 280);
+      window.clearTimeout(state.advanceTimer);
+      state.advanceTimer = window.setTimeout(advance, ok ? 90 : 220);
     }
 
     function onKeyDown(event) {

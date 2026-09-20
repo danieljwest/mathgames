@@ -350,6 +350,12 @@ input {
   text-align: center;
 }
 
+.playfield.playfield-review {
+  place-items: start center;
+  overflow: auto;
+  max-height: min(78vh, 900px);
+}
+
 .screen {
   width: min(720px, 100%);
   display: none;
@@ -360,6 +366,11 @@ input {
   display: grid;
   gap: 1.25rem;
   justify-items: center;
+}
+
+#screen-done.active {
+  width: min(760px, 100%);
+  padding-bottom: 0.5rem;
 }
 
 .screen h1,
@@ -430,6 +441,105 @@ input {
 .help {
   color: var(--muted);
   font-size: 1rem;
+}
+
+.upcoming {
+  width: min(520px, 100%);
+  margin-top: 0.35rem;
+}
+
+.upcoming-label {
+  margin-bottom: 0.55rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.upcoming-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.upcoming-item {
+  padding: 0.85rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(243, 240, 230, 0.82);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3.5vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  animation: pop 280ms ease both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.review {
+  width: 100%;
+  text-align: left;
+}
+
+.review h3 {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+}
+
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.review-item,
+.review-empty {
+  display: grid;
+  grid-template-columns: 1.4rem 1fr;
+  gap: 0.55rem;
+  align-items: start;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.review-empty {
+  grid-template-columns: 1fr;
+  color: var(--muted);
+}
+
+.review-item.ok {
+  border-color: rgba(214, 242, 74, 0.35);
+}
+
+.review-item.bad {
+  border-color: rgba(255, 92, 58, 0.4);
+}
+
+.review-mark {
+  font-weight: 800;
+}
+
+.review-item.ok .review-mark {
+  color: var(--lime);
+}
+
+.review-item.bad .review-mark {
+  color: var(--coral);
+}
+
+.review-detail {
+  font-variant-numeric: tabular-nums;
 }
 
 .ticket-row {
