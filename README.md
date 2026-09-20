@@ -11,6 +11,7 @@ Keyboard-first classroom math games for Mrs. West’s challenges. Live at [math.
 - **Fair Share** — fraction of a whole number
 - **Mystery x** — one-step equations
 - **Percent Pop** — 10%, 25%, 50%, 75%, 100%
+- **Ratio Rally** — equivalent ratios, missing term
 
 Score is `correct − incorrect`. Tickets are awarded from that final score:
 
