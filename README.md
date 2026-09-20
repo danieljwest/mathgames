@@ -1,6 +1,6 @@
-# math.west.best
+# Mrs. West Knows Best
 
-Keyboard-first classroom math games. Static site on Cloudflare Workers — no backend, no accounts.
+Keyboard-first classroom math games for Mrs. West’s challenges. Live at [math.west.best](https://math.west.best). Static site on Cloudflare Workers — no backend, no accounts.
 
 ## Games
 

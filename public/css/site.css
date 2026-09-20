@@ -138,14 +138,14 @@ input {
 .hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 14ch;
+  max-width: 11ch;
 }
 
 .hero-brand {
   margin: 0 0 0.85rem;
   font-family: var(--font-display);
-  font-size: clamp(3.2rem, 10vw, 6.8rem);
-  line-height: 0.9;
+  font-size: clamp(3rem, 9.5vw, 6.2rem);
+  line-height: 0.92;
   letter-spacing: -0.07em;
   font-weight: 800;
 }

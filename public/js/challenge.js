@@ -131,11 +131,12 @@
       }
       if (tickets === 0) {
         els.ticketMessage.textContent =
-          "No tickets this round — hit 20 correct to earn your first!";
+          "No tickets this round — hit 20 correct to earn your first from Mrs. West!";
       } else if (tickets === 1) {
-        els.ticketMessage.textContent = "You earned 1 ticket. Show a teacher!";
+        els.ticketMessage.textContent =
+          "You earned 1 ticket. Wave Mrs. West over!";
       } else {
-        els.ticketMessage.textContent = `You earned ${tickets} tickets. Show a teacher!`;
+        els.ticketMessage.textContent = `You earned ${tickets} tickets. Wave Mrs. West over!`;
       }
       show(els.done);
       if (tickets > 0) burstConfetti(36 + tickets * 10);
