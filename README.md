@@ -8,15 +8,15 @@ Keyboard-first classroom math games for Mrs. West’s challenges. Live at [math.
 - **Add Dash** — addition race with sums ≤ 100
 - **Factor Fill** — find the missing factor
 
-Score is `correct − incorrect`. Tickets are awarded from correct answers only:
+Score is `correct − incorrect`. Tickets are awarded from that final score:
 
-| Correct | Tickets |
-|--------:|--------:|
-| 20–26   | 1       |
-| 27–34   | 2       |
-| 35–44   | 3       |
-| 45–49   | 4       |
-| 50+     | 5       |
+| Score | Tickets |
+|------:|--------:|
+| 20–26 | 1       |
+| 27–34 | 2       |
+| 35–44 | 3       |
+| 45–49 | 4       |
+| 50+   | 5       |
 
 ## Develop
 

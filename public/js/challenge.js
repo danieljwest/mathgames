@@ -9,9 +9,9 @@
   const LOOKAHEAD = 5;
   const PAST_VISIBLE = 3;
 
-  function ticketsForCorrect(correct) {
+  function ticketsForScore(finalScore) {
     for (const band of TICKET_BANDS) {
-      if (correct >= band.min) return band.tickets;
+      if (finalScore >= band.min) return band.tickets;
     }
     return 0;
   }
@@ -260,8 +260,9 @@
       window.clearInterval(state.timerId);
       window.clearTimeout(state.advanceTimer);
       const endedAt = new Date();
-      const tickets = ticketsForCorrect(state.correct);
-      els.finalScore.textContent = String(score());
+      const finalScore = score();
+      const tickets = ticketsForScore(finalScore);
+      els.finalScore.textContent = String(finalScore);
       els.finalCorrect.textContent = String(state.correct);
       els.finalIncorrect.textContent = String(state.incorrect);
       els.finalTickets.textContent = String(tickets);
@@ -275,7 +276,7 @@
       }
       if (tickets === 0) {
         els.ticketMessage.textContent =
-          "No tickets this round — hit 20 correct to earn your first from Mrs. West!";
+          "No tickets this round — reach a score of 20 to earn your first from Mrs. West!";
       } else if (tickets === 1) {
         els.ticketMessage.textContent =
           "You earned 1 ticket. Wave Mrs. West over!";
@@ -412,7 +413,7 @@
 
   window.MathGames = {
     createChallenge,
-    ticketsForCorrect,
+    ticketsForScore,
     formatTime,
   };
 })();
