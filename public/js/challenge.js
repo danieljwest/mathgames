@@ -213,6 +213,14 @@
         submit();
       }
     });
+    els.answer?.addEventListener("input", () => {
+      els.answer.value = els.answer.value.replace(/[^\d-]/g, "");
+    });
+    document.addEventListener("pointerdown", () => {
+      if (state.running) {
+        window.setTimeout(() => els.answer?.focus(), 0);
+      }
+    });
 
     document.querySelectorAll("[data-action='start']").forEach((node) => {
       node.addEventListener("click", start);
