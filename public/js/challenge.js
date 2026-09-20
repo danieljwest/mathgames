@@ -27,7 +27,7 @@
     });
   }
 
-  function burstConfetti(count = 48) {
+  function burstConfetti(count = 36) {
     const layer = document.createElement("div");
     layer.className = "confetti";
     const colors = ["#d6f24a", "#ff5c3a", "#6ef0c2", "#ffc14d", "#f3f0e6"];
@@ -66,8 +66,6 @@
       answer: document.getElementById("answer"),
       pastRail: document.getElementById("rail-past"),
       nextRail: document.getElementById("rail-next"),
-      pastTrack: null,
-      nextTrack: null,
       reviewList: document.getElementById("review-list"),
       timer: document.getElementById("stat-timer"),
       correct: document.getElementById("stat-correct"),
@@ -93,6 +91,8 @@
       accepting: true,
       advanceTimer: null,
       phase: "ready",
+      pastTrack: null,
+      nextTrack: null,
     };
 
     function show(screen) {
@@ -103,20 +103,6 @@
         "playfield-review",
         screen === els.done
       );
-    }
-
-    function setDoneControls(armed) {
-      const confirmRow = document.getElementById("done-confirm");
-      const restartRow = document.getElementById("done-restart");
-      if (confirmRow) confirmRow.hidden = armed;
-      if (restartRow) restartRow.hidden = !armed;
-    }
-
-    function armRestart() {
-      if (state.phase !== "done") return;
-      state.phase = "done-armed";
-      setDoneControls(true);
-      window.setTimeout(() => document.body.focus(), 0);
     }
 
     function score() {
@@ -144,21 +130,20 @@
     function paintTrack(container, items, trackKey) {
       if (!container) return;
       container.innerHTML = "";
-      if (items.length === 0) {
-        state[trackKey] = null;
-        return;
-      }
       const track = document.createElement("div");
       track.className = "rail-track";
-      items.forEach((item, index) => {
+      items.forEach((item) => {
         const row = document.createElement("div");
         row.className = `rail-item ${item.kind}${
-          item.kind === "past" ? (item.ok ? " ok" : " bad") : ""
-        }`;
-        row.style.setProperty("--i", String(index));
-        const mark =
-          item.kind === "past" ? (item.ok ? "✓" : "✗") : "·";
-        row.innerHTML = `<span class="rail-mark" aria-hidden="true">${mark}</span><span class="rail-text">${item.text}</span>`;
+          item.placeholder ? " placeholder" : ""
+        }${item.kind === "past" && !item.placeholder ? (item.ok ? " ok" : " bad") : ""}`;
+        if (item.placeholder) {
+          row.innerHTML =
+            '<span class="rail-mark" aria-hidden="true"></span><span class="rail-text">&nbsp;</span>';
+        } else {
+          const mark = item.kind === "past" ? (item.ok ? "✓" : "✗") : "·";
+          row.innerHTML = `<span class="rail-mark" aria-hidden="true">${mark}</span><span class="rail-text">${item.text}</span>`;
+        }
         track.appendChild(row);
       });
       container.appendChild(track);
@@ -166,20 +151,28 @@
     }
 
     function pastItems() {
-      return state.history.slice(-PAST_VISIBLE).map((entry) => ({
+      const items = state.history.slice(-PAST_VISIBLE).map((entry) => ({
         kind: "past",
         ok: entry.ok,
         text: entry.ok
           ? `${entry.prompt} = ${entry.given}`
           : `${entry.prompt} ≠ ${entry.given}`,
       }));
+      while (items.length < PAST_VISIBLE) {
+        items.unshift({ kind: "past", placeholder: true });
+      }
+      return items;
     }
 
     function nextItems() {
-      return state.queue.slice(1, 1 + lookahead).map((problem) => ({
+      const items = state.queue.slice(1, 1 + lookahead).map((problem) => ({
         kind: "next",
         text: problem.prompt,
       }));
+      while (items.length < lookahead) {
+        items.push({ kind: "next", placeholder: true });
+      }
+      return items;
     }
 
     function shiftTrack(track, onDone) {
@@ -187,17 +180,15 @@
         onDone();
         return;
       }
-      const firstRow = track.querySelector(".rail-item");
-      const distance = firstRow
-        ? firstRow.getBoundingClientRect().height + 8
-        : 40;
+      const row = track.querySelector(".rail-item");
+      const distance = row ? row.getBoundingClientRect().height + 6 : 28;
       track.style.transition = "none";
       track.style.transform = "translateY(0)";
       void track.offsetWidth;
-      track.style.transition = "transform 180ms ease";
+      track.style.transition = "transform 160ms ease";
       track.classList.add("is-shifting");
       track.style.transform = `translateY(-${distance}px)`;
-      window.setTimeout(onDone, 180);
+      window.setTimeout(onDone, 160);
     }
 
     function renderRails({ animate = false } = {}) {
@@ -209,14 +200,14 @@
         return;
       }
       let pending = 2;
-      const finish = () => {
+      const finishPaint = () => {
         pending -= 1;
         if (pending > 0) return;
         paintTrack(els.pastRail, past, "pastTrack");
         paintTrack(els.nextRail, next, "nextTrack");
       };
-      shiftTrack(state.pastTrack, finish);
-      shiftTrack(state.nextTrack, finish);
+      shiftTrack(state.pastTrack, finishPaint);
+      shiftTrack(state.nextTrack, finishPaint);
     }
 
     function renderProblem({ animateRail = false } = {}) {
@@ -253,6 +244,16 @@
       });
     }
 
+    function goToReady() {
+      window.clearInterval(state.timerId);
+      window.clearTimeout(state.advanceTimer);
+      state.running = false;
+      state.phase = "ready";
+      state.accepting = true;
+      show(els.ready);
+      window.setTimeout(() => document.body.focus(), 0);
+    }
+
     function finish() {
       if (!state.running) return;
       state.running = false;
@@ -283,13 +284,9 @@
       }
       renderReview();
       state.phase = "done";
-      setDoneControls(false);
       show(els.done);
-      if (tickets > 0) burstConfetti(36 + tickets * 10);
+      if (tickets > 0) burstConfetti(28 + tickets * 8);
       flashScreen();
-      window.setTimeout(() => {
-        document.querySelector("[data-action='confirm-score']")?.focus();
-      }, 0);
     }
 
     function tick() {
@@ -305,7 +302,7 @@
     }
 
     function start() {
-      if (state.phase === "done") return;
+      if (state.phase !== "ready") return;
       window.clearInterval(state.timerId);
       window.clearTimeout(state.advanceTimer);
       state.running = true;
@@ -363,11 +360,9 @@
 
       if (!state.running) {
         if (event.key === "Enter" || event.key === " ") {
+          if (state.phase !== "ready") return;
           const tag = document.activeElement?.tagName;
           if (tag === "A" || tag === "BUTTON") return;
-          if (state.phase !== "ready" && state.phase !== "done-armed") {
-            return;
-          }
           event.preventDefault();
           start();
         }
@@ -390,30 +385,29 @@
     els.answer?.addEventListener("input", () => {
       els.answer.value = els.answer.value.replace(/[^\d-]/g, "");
     });
-    document.addEventListener("pointerdown", () => {
-      if (state.running) {
-        window.setTimeout(() => els.answer?.focus(), 0);
-      }
+    document.addEventListener("pointerdown", (event) => {
+      if (!state.running) return;
+      if (event.target.closest("a, button")) return;
+      window.setTimeout(() => els.answer?.focus(), 0);
     });
 
     document.querySelectorAll("[data-action='start']").forEach((node) => {
       node.addEventListener("click", start);
     });
-    document.querySelectorAll("[data-action='confirm-score']").forEach((node) => {
-      node.addEventListener("click", armRestart);
-    });
     document.querySelectorAll("[data-action='again']").forEach((node) => {
-      node.addEventListener("click", () => {
-        if (state.phase === "done-armed") start();
-      });
+      node.addEventListener("click", goToReady);
     });
+
+    document.documentElement.style.setProperty("--past-rows", String(PAST_VISIBLE));
+    document.documentElement.style.setProperty("--next-rows", String(lookahead));
 
     show(els.ready);
-    setDoneControls(false);
     renderHud();
+    paintTrack(els.pastRail, pastItems(), "pastTrack");
+    paintTrack(els.nextRail, nextItems(), "nextTrack");
     window.setTimeout(() => document.body.focus(), 0);
 
-    return { start, finish };
+    return { start, finish, goToReady };
   }
 
   window.MathGames = {
