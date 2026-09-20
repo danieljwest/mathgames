@@ -51,7 +51,7 @@
             <h1>Multiply Blast</h1>
             <p class="lede">
               Random facts up to 12×12. Sixty seconds. Score is correct minus incorrect.
-              Tickets are based on how many you get right — Mrs. West keeps the tally. You’ll see the next two problems coming up so you can stay ahead.
+              Tickets are based on how many you get right — Mrs. West keeps the tally. You’ll see the next few problems coming up so you can stay ahead.
             </p>
             <div class="cta-row">
               <button class="btn btn-primary" type="button" data-action="start">
@@ -60,8 +60,7 @@
               <a class="btn btn-ghost" href="/">Back home</a>
             </div>
           </section>
-
-                    <section class="screen" id="screen-play">
+          <section class="screen" id="screen-play">
             <div class="problem" id="prompt" aria-live="polite">7 × 8</div>
             <label class="visually-hidden" for="answer">Your answer</label>
             <input
@@ -73,8 +72,8 @@
               spellcheck="false"
               aria-label="Your answer"
             />
-            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · peek at <strong>Up next</strong> to stay ahead</p>
-            <div class="upcoming" id="upcoming" aria-live="polite"></div>
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · grey list below shows recent answers and the next five</p>
+            <div class="problem-rail" id="problem-rail" aria-live="polite"></div>
           </section>
 
 <section class="screen" id="screen-done">

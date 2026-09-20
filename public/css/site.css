@@ -446,38 +446,66 @@ input {
   font-size: 1rem;
 }
 
-.upcoming {
-  width: min(520px, 100%);
-  margin-top: 0.35rem;
+.problem-rail {
+  width: min(420px, 100%);
+  margin-top: 0.15rem;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.35));
 }
 
-.upcoming-label {
-  margin-bottom: 0.55rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.upcoming-row {
+.rail-track {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  gap: 0.45rem;
+  will-change: transform;
 }
 
-.upcoming-item {
-  padding: 0.85rem 0.7rem;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(243, 240, 230, 0.82);
+.rail-track.is-shifting {
+  pointer-events: none;
+}
+
+.rail-item {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.15rem;
+  color: rgba(243, 240, 230, 0.42);
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 3.5vw, 1.7rem);
+  font-size: clamp(1.15rem, 2.8vw, 1.45rem);
   font-weight: 800;
   letter-spacing: -0.04em;
-  animation: pop 280ms ease both;
-  animation-delay: calc(var(--i, 0) * 40ms);
+  line-height: 1.1;
+  text-align: left;
+}
+
+.rail-item.past {
+  opacity: 0.55;
+}
+
+.rail-item.past.ok .rail-mark {
+  color: rgba(214, 242, 74, 0.75);
+}
+
+.rail-item.past.bad {
+  color: rgba(255, 92, 58, 0.7);
+}
+
+.rail-item.past.bad .rail-mark {
+  color: rgba(255, 92, 58, 0.85);
+}
+
+.rail-item.next {
+  opacity: 0.38;
+}
+
+.rail-mark {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.rail-text {
+  font-variant-numeric: tabular-nums;
 }
 
 .review {

@@ -6,7 +6,8 @@
     { min: 27, tickets: 2 },
     { min: 20, tickets: 1 },
   ];
-  const LOOKAHEAD = 2;
+  const LOOKAHEAD = 5;
+  const PAST_VISIBLE = 3;
 
   function ticketsForCorrect(correct) {
     for (const band of TICKET_BANDS) {
@@ -63,7 +64,8 @@
       done: document.getElementById("screen-done"),
       prompt: document.getElementById("prompt"),
       answer: document.getElementById("answer"),
-      upcoming: document.getElementById("upcoming"),
+      upcoming: document.getElementById("problem-rail"),
+      railTrack: null,
       reviewList: document.getElementById("review-list"),
       timer: document.getElementById("stat-timer"),
       correct: document.getElementById("stat-correct"),
@@ -137,36 +139,79 @@
       els.timer.classList.toggle("urgent", state.running && state.remaining <= 10);
     }
 
-    function renderUpcoming() {
-      if (!els.upcoming) return;
+    function buildRailItems() {
+      const past = state.history.slice(-PAST_VISIBLE).reverse();
       const next = state.queue.slice(1, 1 + lookahead);
-      els.upcoming.innerHTML = "";
-      if (next.length === 0) return;
-
-      const label = document.createElement("div");
-      label.className = "upcoming-label";
-      label.textContent = "Up next";
-      els.upcoming.appendChild(label);
-
-      const row = document.createElement("div");
-      row.className = "upcoming-row";
-      next.forEach((problem, index) => {
-        const item = document.createElement("div");
-        item.className = "upcoming-item";
-        item.style.setProperty("--i", String(index));
-        item.textContent = problem.prompt;
-        row.appendChild(item);
-      });
-      els.upcoming.appendChild(row);
+      return [
+        ...past.map((entry) => ({
+          kind: "past",
+          ok: entry.ok,
+          text: entry.ok
+            ? `${entry.prompt} = ${entry.given}`
+            : `${entry.prompt} ≠ ${entry.given}`,
+        })),
+        ...next.map((problem) => ({
+          kind: "next",
+          text: problem.prompt,
+        })),
+      ];
     }
 
-    function renderProblem() {
+    function paintRail(items) {
+      if (!els.upcoming) return;
+      els.upcoming.innerHTML = "";
+      const track = document.createElement("div");
+      track.className = "rail-track";
+      track.id = "rail-track";
+      items.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = `rail-item ${item.kind}${
+          item.kind === "past" ? (item.ok ? " ok" : " bad") : ""
+        }`;
+        row.style.setProperty("--i", String(index));
+        if (item.kind === "past") {
+          row.innerHTML = `<span class="rail-mark" aria-hidden="true">${
+            item.ok ? "✓" : "✗"
+          }</span><span class="rail-text">${item.text}</span>`;
+        } else {
+          row.innerHTML = `<span class="rail-mark" aria-hidden="true">→</span><span class="rail-text">${item.text}</span>`;
+        }
+        track.appendChild(row);
+      });
+      els.upcoming.appendChild(track);
+      els.railTrack = track;
+    }
+
+    function renderRail({ animate = false } = {}) {
+      if (!els.upcoming) return;
+      const items = buildRailItems();
+      if (!animate || !els.railTrack || items.length === 0) {
+        paintRail(items);
+        return;
+      }
+
+      const track = els.railTrack;
+      const firstRow = track.querySelector(".rail-item");
+      const distance = firstRow ? firstRow.getBoundingClientRect().height + 8 : 40;
+      track.style.transition = "none";
+      track.style.transform = "translateY(0)";
+      void track.offsetWidth;
+      track.style.transition = "transform 180ms ease";
+      track.classList.add("is-shifting");
+      track.style.transform = `translateY(-${distance}px)`;
+
+      window.setTimeout(() => {
+        paintRail(items);
+      }, 180);
+    }
+
+    function renderProblem({ animateRail = false } = {}) {
       const problem = current();
       if (!problem) return;
       els.prompt.textContent = problem.prompt;
       els.answer.value = "";
       els.prompt.classList.remove("wrong", "right");
-      renderUpcoming();
+      renderRail({ animate: animateRail });
       state.accepting = true;
       els.answer.focus();
     }
@@ -242,7 +287,7 @@
     function advance() {
       state.queue.shift();
       fillQueue();
-      renderProblem();
+      renderProblem({ animateRail: true });
     }
 
     function start() {
