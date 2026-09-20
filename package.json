@@ -1,0 +1,13 @@
+{
+  "name": "math-west-best",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Keyboard-first math games for the classroom",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.34.0"
+  }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multiply Blast — math.west.best</title>
+    <meta
+      name="description"
+      content="60-second multiplication challenge through 12×12. Keyboard only."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/site.css" />
+  </head>
+  <body tabindex="-1">
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/">math.<span>west</span>.best</a>
+        <p class="kbd-hint">
+          <span class="kbd">Enter</span> start · type answer · <span class="kbd">Enter</span> next ·
+          <span class="kbd">Esc</span> end early
+        </p>
+      </header>
+
+      <div class="stage">
+        <div class="hud">
+          <div class="panel stat">
+            <div class="stat-label">Time</div>
+            <div class="stat-value" id="stat-timer">60</div>
+          </div>
+          <div class="panel stat">
+            <div class="stat-label">Correct</div>
+            <div class="stat-value" id="stat-correct">0</div>
+          </div>
+          <div class="panel stat">
+            <div class="stat-label">Incorrect</div>
+            <div class="stat-value" id="stat-incorrect">0</div>
+          </div>
+          <div class="panel stat">
+            <div class="stat-label">Score</div>
+            <div class="stat-value" id="stat-score">0</div>
+          </div>
+        </div>
+
+        <div class="panel playfield">
+          <section class="screen active" id="screen-ready">
+            <h1>Multiply Blast</h1>
+            <p class="lede">
+              Random facts up to 12×12. Sixty seconds. Score is correct minus incorrect.
+              Tickets are based on how many you get right.
+            </p>
+            <div class="cta-row">
+              <button class="btn btn-primary" type="button" data-action="start">
+                Press Enter to start
+              </button>
+              <a class="btn btn-ghost" href="/">Back home</a>
+            </div>
+          </section>
+
+          <section class="screen" id="screen-play">
+            <div class="problem" id="prompt" aria-live="polite">7 × 8</div>
+            <label class="visually-hidden" for="answer">Your answer</label>
+            <input
+              class="answer"
+              id="answer"
+              inputmode="numeric"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-label="Your answer"
+            />
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span></p>
+          </section>
+
+          <section class="screen" id="screen-done">
+            <h2>Time!</h2>
+            <div class="ticket-row" id="ticket-row" aria-hidden="true"></div>
+            <p class="lede" id="ticket-message">You earned tickets.</p>
+            <div class="results">
+              <div class="result-card">
+                Score
+                <strong id="final-score">0</strong>
+              </div>
+              <div class="result-card">
+                Correct
+                <strong id="final-correct">0</strong>
+              </div>
+              <div class="result-card">
+                Incorrect
+                <strong id="final-incorrect">0</strong>
+              </div>
+              <div class="result-card">
+                Tickets
+                <strong id="final-tickets">0</strong>
+              </div>
+              <div class="result-card" style="grid-column: span 2">
+                Finished at
+                <strong id="final-time">—</strong>
+              </div>
+            </div>
+            <div class="cta-row">
+              <button class="btn btn-primary" type="button" data-action="again">
+                Play again (Enter)
+              </button>
+              <a class="btn btn-ghost" href="/">Home</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+    </style>
+    <script src="/js/challenge.js"></script>
+    <script>
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      MathGames.createChallenge({
+        duration: 60,
+        nextProblem() {
+          const a = randomInt(0, 12);
+          const b = randomInt(0, 12);
+          return {
+            prompt: `${a} × ${b}`,
+            answer: a * b,
+          };
+        },
+      });
+    </script>
+  </body>
+</html>
