@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Integer Rush — Mrs. West Knows Best</title>
-    <meta name="description" content="60-second integer addition and subtraction. Keyboard only." />
+    <title>Decimal Drift — Mrs. West Knows Best</title>
+    <meta name="description" content="Add and subtract decimals in 60 seconds." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,8 +45,8 @@
 
         <div class="panel playfield">
           <section class="screen active" id="screen-ready">
-            <h1>Integer Rush</h1>
-            <p class="lede">Add and subtract with positives and negatives. Same 60-second clock and ticket bands.</p>
+            <h1>Decimal Drift</h1>
+            <p class="lede">Add and subtract tenths and hundredths — type the decimal point when you need it.</p>
             <div class="cta-row">
               <button class="btn btn-primary" type="button" data-action="start">
                 Press Enter to start
@@ -56,19 +56,19 @@
           </section>
           <section class="screen" id="screen-play">
             <div class="problem-rail problem-rail-past" id="rail-past" aria-live="polite"></div>
-            <div class="problem" id="prompt" aria-live="polite">-4 + 9</div>
+            <div class="problem" id="prompt" aria-live="polite">3.4 + 2.75</div>
             <div class="problem-rail problem-rail-next" id="rail-next" aria-live="polite"></div>
             <label class="visually-hidden" for="answer">Your answer</label>
             <input
               class="answer"
               id="answer"
-              inputmode="numeric"
+              inputmode="decimal"
               autocomplete="off"
               autocapitalize="off"
               spellcheck="false"
               aria-label="Your answer"
             />
-            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · use <span class="kbd">-</span> for negatives</p>
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span></p>
           </section>
 
           <section class="screen" id="screen-done">
@@ -131,25 +131,26 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
-      function addPrompt(a, b) {
-        if (b < 0) return `${a} − ${Math.abs(b)}`;
-        return `${a} + ${b}`;
-      }
-
-      function subPrompt(a, b) {
-        if (b < 0) return `${a} + ${Math.abs(b)}`;
-        return `${a} − ${b}`;
+      function fmt(cents) {
+        const n = Math.abs(cents);
+        let s;
+        if (n % 100 === 0) s = String(n / 100);
+        else if (n % 10 === 0) s = (n / 100).toFixed(1);
+        else s = (n / 100).toFixed(2);
+        return cents < 0 ? `-${s}` : s;
       }
 
       MathGames.createChallenge({
         duration: 60,
         nextProblem() {
-          const a = randomInt(-12, 12);
-          const b = randomInt(-12, 12);
+          const a = randomInt(5, 950);
+          const b = randomInt(5, 950);
           if (Math.random() < 0.55) {
-            return { prompt: addPrompt(a, b), answer: a + b };
+            return { prompt: `${fmt(a)} + ${fmt(b)}`, answer: (a + b) / 100 };
           }
-          return { prompt: subPrompt(a, b), answer: a - b };
+          const big = Math.max(a, b);
+          const small = Math.min(a, b);
+          return { prompt: `${fmt(big)} − ${fmt(small)}`, answer: (big - small) / 100 };
         },
       });
 

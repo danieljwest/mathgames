@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Integer Rush — Mrs. West Knows Best</title>
-    <meta name="description" content="60-second integer addition and subtraction. Keyboard only." />
+    <title>Unit Rate Run — Mrs. West Knows Best</title>
+    <meta name="description" content="Find unit rates in 60 seconds." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,8 +45,8 @@
 
         <div class="panel playfield">
           <section class="screen active" id="screen-ready">
-            <h1>Integer Rush</h1>
-            <p class="lede">Add and subtract with positives and negatives. Same 60-second clock and ticket bands.</p>
+            <h1>Unit Rate Run</h1>
+            <p class="lede">Find the “per one”: dollars each, miles per hour, and more. Same timer and tickets.</p>
             <div class="cta-row">
               <button class="btn btn-primary" type="button" data-action="start">
                 Press Enter to start
@@ -56,19 +56,19 @@
           </section>
           <section class="screen" id="screen-play">
             <div class="problem-rail problem-rail-past" id="rail-past" aria-live="polite"></div>
-            <div class="problem" id="prompt" aria-live="polite">-4 + 9</div>
+            <div class="problem" id="prompt" aria-live="polite">$12 for 3 → ? each</div>
             <div class="problem-rail problem-rail-next" id="rail-next" aria-live="polite"></div>
             <label class="visually-hidden" for="answer">Your answer</label>
             <input
               class="answer"
               id="answer"
-              inputmode="numeric"
+              inputmode="decimal"
               autocomplete="off"
               autocapitalize="off"
               spellcheck="false"
               aria-label="Your answer"
             />
-            <p class="help">Type the answer, then press <span class="kbd">Enter</span> · use <span class="kbd">-</span> for negatives</p>
+            <p class="help">Type the answer, then press <span class="kbd">Enter</span></p>
           </section>
 
           <section class="screen" id="screen-done">
@@ -131,25 +131,25 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
-      function addPrompt(a, b) {
-        if (b < 0) return `${a} − ${Math.abs(b)}`;
-        return `${a} + ${b}`;
-      }
-
-      function subPrompt(a, b) {
-        if (b < 0) return `${a} + ${Math.abs(b)}`;
-        return `${a} − ${b}`;
-      }
-
       MathGames.createChallenge({
         duration: 60,
         nextProblem() {
-          const a = randomInt(-12, 12);
-          const b = randomInt(-12, 12);
-          if (Math.random() < 0.55) {
-            return { prompt: addPrompt(a, b), answer: a + b };
+          const kind = randomInt(0, 3);
+          const n = randomInt(2, 9);
+          if (kind === 0) {
+            const each = randomInt(2, 15);
+            return { prompt: `$${each * n} for ${n} → ? each`, answer: each };
           }
-          return { prompt: subPrompt(a, b), answer: a - b };
+          if (kind === 1) {
+            const mph = randomInt(20, 75);
+            return { prompt: `${mph * n} mi in ${n} hr → ? mph`, answer: mph };
+          }
+          if (kind === 2) {
+            const each = randomInt(3, 20);
+            return { prompt: `${each * n} packs / ${n} boxes → ? each`, answer: each };
+          }
+          const each = randomInt(4, 18);
+          return { prompt: `${n} for $${each * n} → $? each`, answer: each };
         },
       });
 

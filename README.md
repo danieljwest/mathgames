@@ -12,6 +12,10 @@ Keyboard-first classroom math games for Mrs. West’s challenges. Live at [math.
 - **Mystery x** — one-step equations
 - **Percent Pop** — 10%, 25%, 50%, 75%, 100%
 - **Ratio Rally** — equivalent ratios, missing term
+- **Divide & Dash** — division facts / missing number
+- **Decimal Drift** — add/subtract tenths & hundredths
+- **Power Up** — squares, cubes, small powers
+- **Unit Rate Run** — per-one rates
 
 Score is `correct − incorrect`. Tickets are awarded from that final score:
 

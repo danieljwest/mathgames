@@ -330,7 +330,8 @@
       if (!Number.isFinite(value)) return;
 
       state.accepting = false;
-      const ok = value === problem.answer;
+      const ok =
+        Math.round(value * 100) === Math.round(problem.answer * 100);
       state.history.push({
         prompt: problem.prompt,
         answer: problem.answer,
@@ -411,9 +412,16 @@
       // Let Backspace delete normally inside the field.
     });
     els.answer?.addEventListener("input", () => {
-      const cleaned = els.answer.value.replace(/[^\d-]/g, "");
-      // Keep a single leading minus only.
-      const normalized = cleaned.replace(/(?!^)-/g, "").replace(/-+/g, "-");
+      let cleaned = els.answer.value.replace(/[^\d.-]/g, "");
+      cleaned = cleaned.replace(/(?!^)-/g, "");
+      const minus = cleaned.startsWith("-") ? "-" : "";
+      cleaned = cleaned.replace(/-/g, "");
+      const parts = cleaned.split(".");
+      const normalized =
+        minus +
+        (parts.length === 1
+          ? parts[0]
+          : `${parts[0]}.${parts.slice(1).join("").slice(0, 2)}`);
       if (els.answer.value !== normalized) {
         els.answer.value = normalized;
       }
