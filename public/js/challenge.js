@@ -359,6 +359,32 @@
         return;
       }
 
+      if (
+        state.running &&
+        (event.key === "x" || event.key === "X") &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey
+      ) {
+        event.preventDefault();
+        goToReady();
+        return;
+      }
+
+      if (event.key === "Backspace") {
+        if (!state.running || !state.accepting) {
+          if (state.running) event.preventDefault();
+          return;
+        }
+        // Keep edits in the answer box — don't let the browser go "back".
+        if (document.activeElement !== els.answer) {
+          event.preventDefault();
+          els.answer.focus();
+          els.answer.value = els.answer.value.slice(0, -1);
+        }
+        return;
+      }
+
       if (!state.running) {
         if (event.key === "Enter" || event.key === " ") {
           if (state.phase !== "ready") return;
@@ -382,9 +408,15 @@
         event.preventDefault();
         submit();
       }
+      // Let Backspace delete normally inside the field.
     });
     els.answer?.addEventListener("input", () => {
-      els.answer.value = els.answer.value.replace(/[^\d-]/g, "");
+      const cleaned = els.answer.value.replace(/[^\d-]/g, "");
+      // Keep a single leading minus only.
+      const normalized = cleaned.replace(/(?!^)-/g, "").replace(/-+/g, "-");
+      if (els.answer.value !== normalized) {
+        els.answer.value = normalized;
+      }
     });
     document.addEventListener("pointerdown", (event) => {
       if (!state.running) return;
