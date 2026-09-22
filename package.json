@@ -5,7 +5,8 @@
   "description": "Keyboard-first math games for the classroom",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "stamp": "node scripts/stamp-assets.mjs",
+    "deploy": "npm run stamp && wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.34.0"
