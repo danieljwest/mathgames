@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Power Up — Mrs. West Knows Best</title>
-    <meta name="description" content="Squares, cubes, and simple powers in 60 seconds." />
+    <title>Order Ops — Mrs. West Knows Best</title>
+    <meta name="description" content="60-second order of operations challenge. Keyboard only." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,8 +45,10 @@
 
         <div class="panel playfield">
           <section class="screen active" id="screen-ready">
-            <h1>Power Up</h1>
-            <p class="lede">Squares, cubes, and a few power-ups like 2^4. Same sprint rules.</p>
+            <h1>Order Ops</h1>
+            <p class="lede">
+              × and ÷ jump the line — unless parentheses cut ahead. Short expressions, one answer, same timer and tickets.
+            </p>
             <div class="cta-row">
               <button class="btn btn-primary" type="button" data-action="start">
                 Press Enter to start
@@ -56,7 +58,7 @@
           </section>
           <section class="screen" id="screen-play">
             <div class="problem-rail problem-rail-past" id="rail-past" aria-live="polite"></div>
-            <div class="problem" id="prompt" aria-live="polite">7²</div>
+            <div class="problem" id="prompt" aria-live="polite">3 + 4 × 2</div>
             <div class="problem-rail problem-rail-next" id="rail-next" aria-live="polite"></div>
             <label class="visually-hidden" for="answer">Your answer</label>
             <input
@@ -123,32 +125,82 @@
         clip: rect(0, 0, 0, 0);
         border: 0;
       }
+      #prompt {
+        font-size: clamp(1.6rem, 5.5vh, 3.2rem);
+        letter-spacing: -0.03em;
+      }
     </style>
     <script src="/js/challenge.js?v=9fafb0c059"></script>
     <script>
-
       function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
+      function nextProblem() {
+        const roll = randomInt(0, 99);
+
+        // a ± b × c  /  a × b ± c
+        if (roll < 28) {
+          const b = randomInt(2, 9);
+          const c = randomInt(2, 9);
+          const a = randomInt(1, 12);
+          if (Math.random() < 0.5) {
+            return { prompt: `${a} + ${b} × ${c}`, answer: a + b * c };
+          }
+          return { prompt: `${a} − ${b} × ${c}`, answer: a - b * c };
+        }
+
+        if (roll < 48) {
+          const a = randomInt(2, 9);
+          const b = randomInt(2, 9);
+          const c = randomInt(1, 12);
+          if (Math.random() < 0.5) {
+            return { prompt: `${a} × ${b} + ${c}`, answer: a * b + c };
+          }
+          return { prompt: `${a} × ${b} − ${c}`, answer: a * b - c };
+        }
+
+        // ÷ with clean numbers, ×÷ left-to-right
+        if (roll < 68) {
+          const b = randomInt(2, 9);
+          const q = randomInt(2, 10);
+          const a = b * q;
+          const c = randomInt(2, 8);
+          if (Math.random() < 0.5) {
+            return { prompt: `${a} ÷ ${b} × ${c}`, answer: q * c };
+          }
+          return { prompt: `${a} ÷ ${b} + ${c}`, answer: q + c };
+        }
+
+        // parentheses
+        if (roll < 88) {
+          const a = randomInt(1, 9);
+          const b = randomInt(1, 9);
+          const c = randomInt(2, 8);
+          if (Math.random() < 0.5) {
+            return { prompt: `(${a} + ${b}) × ${c}`, answer: (a + b) * c };
+          }
+          const sum = a + b;
+          // prefer divisible when subtracting inside isn't needed
+          return { prompt: `${c} × (${a} + ${b})`, answer: c * sum };
+        }
+
+        // light exponent use — base below 12
+        const base = randomInt(2, 11);
+        const exp = base <= 3 ? randomInt(2, 3) : 2;
+        const power = base ** exp;
+        const mark = exp === 2 ? `${base}²` : `${base}³`;
+        const k = randomInt(1, 9);
+        if (Math.random() < 0.5) {
+          return { prompt: `${mark} + ${k}`, answer: power + k };
+        }
+        return { prompt: `${k} + ${mark}`, answer: k + power };
+      }
+
       MathGames.createChallenge({
         duration: 60,
-        nextProblem() {
-          const kind = randomInt(0, 9);
-          if (kind < 5) {
-            const n = randomInt(0, 12);
-            return { prompt: `${n}²`, answer: n * n };
-          }
-          if (kind < 8) {
-            const n = randomInt(0, 6);
-            return { prompt: `${n}³`, answer: n * n * n };
-          }
-          const base = randomInt(2, 5);
-          const exp = randomInt(2, 4);
-          return { prompt: `${base}^${exp}`, answer: base ** exp };
-        },
+        nextProblem,
       });
-
     </script>
   </body>
 </html>

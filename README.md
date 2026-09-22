@@ -14,7 +14,7 @@ Keyboard-first classroom math games for Mrs. West’s challenges. Live at [math.
 - **Ratio Rally** — equivalent ratios, missing term
 - **Divide & Dash** — division facts / missing number
 - **Decimal Drift** — add/subtract tenths & hundredths
-- **Power Up** — squares, cubes, small powers
+- **Order Ops** — PEMDAS / order of operations
 - **Unit Rate Run** — per-one rates
 
 Score is `correct − incorrect`. Tickets are awarded from that final score:
