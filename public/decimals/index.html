@@ -126,34 +126,52 @@
     </style>
     <script src="/js/challenge.js?v=9fafb0c059"></script>
     <script>
-
       function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
-      function fmt(cents) {
-        const n = Math.abs(cents);
-        let s;
-        if (n % 100 === 0) s = String(n / 100);
-        else if (n % 10 === 0) s = (n / 100).toFixed(1);
-        else s = (n / 100).toFixed(2);
-        return cents < 0 ? `-${s}` : s;
+      // Values in tenths (so 15 => 1.5). Keeps mental math snappy.
+      function fmtTenths(t) {
+        const whole = Math.floor(t / 10);
+        const frac = t % 10;
+        return frac === 0 ? String(whole) : `${whole}.${frac}`;
+      }
+
+      function easyNumber() {
+        // ~80% plain tenths 0.1–9.9; ~20% whole numbers 1–12
+        if (Math.random() < 0.2) return randomInt(1, 12) * 10;
+        return randomInt(1, 99);
       }
 
       MathGames.createChallenge({
         duration: 60,
         nextProblem() {
-          const a = randomInt(5, 950);
-          const b = randomInt(5, 950);
-          if (Math.random() < 0.55) {
-            return { prompt: `${fmt(a)} + ${fmt(b)}`, answer: (a + b) / 100 };
+          const a = easyNumber();
+          const b = easyNumber();
+          // Prefer addition; subtraction stays with a clear larger − smaller
+          if (Math.random() < 0.65) {
+            // Keep sums under ~15 so nothing gets huge
+            if (a + b > 150) {
+              const small = randomInt(1, 40);
+              const other = randomInt(1, 50);
+              return {
+                prompt: `${fmtTenths(small)} + ${fmtTenths(other)}`,
+                answer: (small + other) / 10,
+              };
+            }
+            return {
+              prompt: `${fmtTenths(a)} + ${fmtTenths(b)}`,
+              answer: (a + b) / 10,
+            };
           }
           const big = Math.max(a, b);
           const small = Math.min(a, b);
-          return { prompt: `${fmt(big)} − ${fmt(small)}`, answer: (big - small) / 100 };
+          return {
+            prompt: `${fmtTenths(big)} − ${fmtTenths(small)}`,
+            answer: (big - small) / 10,
+          };
         },
       });
-
     </script>
   </body>
 </html>
