@@ -135,7 +135,8 @@
         duration: 60,
         nextProblem() {
           const b = randomInt(1, 12);
-          const q = randomInt(0, 12);
+          // Keep quotients ≥ 1 so we never get ambiguous 0 ÷ ? = 0
+          const q = randomInt(1, 12);
           const a = b * q;
           const kind = randomInt(0, 2);
           if (kind === 0) return { prompt: `${a} ÷ ${b}`, answer: q };
