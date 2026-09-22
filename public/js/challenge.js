@@ -331,10 +331,12 @@
 
       state.accepting = false;
       const ok =
-        Math.round(value * 100) === Math.round(problem.answer * 100);
+        typeof problem.check === "function"
+          ? problem.check(value)
+          : Math.round(value * 100) === Math.round(problem.answer * 100);
       state.history.push({
         prompt: problem.prompt,
-        answer: problem.answer,
+        answer: problem.answerLabel ?? problem.answer,
         given: value,
         ok,
       });

@@ -124,7 +124,7 @@
         border: 0;
       }
     </style>
-    <script src="/js/challenge.js?v=9fafb0c059"></script>
+    <script src="/js/challenge.js?v=bd2a7ede8f"></script>
     <script>
 
       function randomInt(min, max) {
@@ -135,12 +135,19 @@
         duration: 60,
         nextProblem() {
           const b = randomInt(1, 12);
-          // Keep quotients ≥ 1 so we never get ambiguous 0 ÷ ? = 0
-          const q = randomInt(1, 12);
+          const q = randomInt(0, 12);
           const a = b * q;
           const kind = randomInt(0, 2);
           if (kind === 0) return { prompt: `${a} ÷ ${b}`, answer: q };
           if (kind === 1) return { prompt: `? ÷ ${b} = ${q}`, answer: a };
+          // 0 ÷ ? = 0 is true for every non-zero divisor
+          if (q === 0) {
+            return {
+              prompt: `${a} ÷ ? = ${q}`,
+              check: (n) => n !== 0,
+              answerLabel: "any ≠ 0",
+            };
+          }
           return { prompt: `${a} ÷ ? = ${q}`, answer: b };
         },
       });
