@@ -13,10 +13,10 @@
   ];
 
   const ELITE_MESSAGES = {
-    56: "LEGENDARY! Mrs. West is gonna need a bigger pocket.",
-    57: "BLAZING! The ticket printer is sweating.",
-    58: "MYTHIC! Even the Chromebook is impressed.",
-    59: "NEARLY PERFECT! One shy of immortality.",
+    56: "LEGENDARY! Mrs. West is going to need to buy more tickets.",
+    57: "That's not a score — that's a rumor kids will tell next year.",
+    58: "MYTHIC! Even the school computer is impressed.",
+    59: "NEARLY PERFECT! So close the bell got jealous.",
     60: "PERFECT 60! Mrs. West Knows Best — and so do you.",
   };
   const LOOKAHEAD = 5;
