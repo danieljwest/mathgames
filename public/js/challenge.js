@@ -55,13 +55,13 @@
       const piece = document.createElement("i");
       piece.style.left = `${Math.random() * 100}%`;
       piece.style.setProperty("--c", colors[i % colors.length]);
-      piece.style.animationDuration = `${1.4 + Math.random() * (mega ? 2.4 : 1.8)}s`;
-      piece.style.animationDelay = `${Math.random() * (mega ? 0.8 : 0.35)}s`;
+      piece.style.animationDuration = `${3.2 + Math.random() * (mega ? 3.5 : 2.4)}s`;
+      piece.style.animationDelay = `${Math.random() * (mega ? 1.4 : 0.7)}s`;
       if (mega && Math.random() < 0.35) piece.classList.add("wide");
       layer.appendChild(piece);
     }
     document.body.appendChild(layer);
-    window.setTimeout(() => layer.remove(), mega ? 4800 : 3600);
+    window.setTimeout(() => layer.remove(), mega ? 9000 : 7000);
   }
 
   function launchFireworks(count, { intensity = 1 } = {}) {
@@ -112,7 +112,7 @@
             burst.appendChild(bit);
           }
           layer.appendChild(burst);
-          window.setTimeout(() => burst.remove(), 1800);
+          window.setTimeout(() => burst.remove(), 2800);
         }, 520);
       }, f * (intensity >= 5 ? 380 : 480));
     }
@@ -134,11 +134,11 @@
           finale.appendChild(spark);
         }
         layer.appendChild(finale);
-        window.setTimeout(() => finale.remove(), 2000);
+        window.setTimeout(() => finale.remove(), 3200);
       }, count * 380 + 200);
     }
 
-    window.setTimeout(() => layer.remove(), count * 500 + 3600);
+    window.setTimeout(() => layer.remove(), count * 500 + 7000);
   }
 
   function flashScreen({ rainbow = false, pulses = 1 } = {}) {
@@ -174,10 +174,13 @@
     burstConfetti(36 + intensity * 18, { mega: intensity >= 3 });
 
     if (intensity >= 2) {
-      window.setTimeout(() => burstConfetti(24 + intensity * 10, { mega: intensity >= 4 }), 700);
+      window.setTimeout(() => burstConfetti(24 + intensity * 10, { mega: intensity >= 4 }), 900);
     }
     if (intensity >= 4) {
-      window.setTimeout(() => burstConfetti(50, { mega: true }), 1400);
+      window.setTimeout(() => burstConfetti(50, { mega: true }), 2000);
+    }
+    if (intensity >= 5) {
+      window.setTimeout(() => burstConfetti(40, { mega: true }), 3800);
     }
 
     flashScreen({

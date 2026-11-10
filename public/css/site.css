@@ -945,14 +945,14 @@ body.game-page .btn {
 .firework-burst i {
   width: 7px;
   height: 7px;
-  animation: spark-out 1.05s ease-out forwards;
+  animation: spark-out 1.85s ease-out forwards;
 }
 
 .firework-burst b {
   width: 5px;
   height: 9px;
   border-radius: 2px;
-  animation: spark-fall 1.25s ease-in forwards;
+  animation: spark-fall 2.4s ease-in forwards;
 }
 
 .confetti {
@@ -1102,9 +1102,16 @@ body.game-page .btn {
 }
 
 @keyframes fall {
-  to {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.85;
+  }
+  100% {
     transform: translateY(110vh) rotate(540deg);
-    opacity: 0.2;
+    opacity: 0.15;
   }
 }
 
@@ -1124,8 +1131,11 @@ body.game-page .btn {
     transform: translate(0, 0) scale(1);
     opacity: 1;
   }
+  70% {
+    opacity: 0.85;
+  }
   100% {
-    transform: translate(var(--dx), var(--dy)) scale(0.2);
+    transform: translate(var(--dx), var(--dy)) scale(0.25);
     opacity: 0;
   }
 }
@@ -1134,6 +1144,9 @@ body.game-page .btn {
   0% {
     transform: translate(0, 0) rotate(0deg);
     opacity: 1;
+  }
+  75% {
+    opacity: 0.8;
   }
   100% {
     transform: translate(var(--dx), var(--dy)) rotate(280deg);
