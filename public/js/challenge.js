@@ -16,7 +16,7 @@
     56: "LEGENDARY! Mrs. West is going to need to buy more tickets.",
     57: "That's not a score — that's a rumor kids will tell next year.",
     58: "MYTHIC! Even the school computer is impressed.",
-    59: "NEARLY PERFECT! So close the bell got jealous.",
+    59: "NEARLY PERFECT! Save some tickets for the rest of us.",
     60: "PERFECT 60! Mrs. West Knows Best — and so do you.",
   };
   const LOOKAHEAD = 5;
