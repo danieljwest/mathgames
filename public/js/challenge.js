@@ -1,11 +1,24 @@
 (() => {
   const TICKET_BANDS = [
+    { min: 60, tickets: 10 },
+    { min: 59, tickets: 9 },
+    { min: 58, tickets: 8 },
+    { min: 57, tickets: 7 },
+    { min: 56, tickets: 6 },
     { min: 50, tickets: 5 },
     { min: 45, tickets: 4 },
     { min: 35, tickets: 3 },
     { min: 27, tickets: 2 },
     { min: 20, tickets: 1 },
   ];
+
+  const ELITE_MESSAGES = {
+    56: "LEGENDARY! Mrs. West is gonna need a bigger pocket.",
+    57: "BLAZING! The ticket printer is sweating.",
+    58: "MYTHIC! Even the Chromebook is impressed.",
+    59: "NEARLY PERFECT! One shy of immortality.",
+    60: "PERFECT 60! Mrs. West Knows Best — and so do you.",
+  };
   const LOOKAHEAD = 5;
   const PAST_VISIBLE = 3;
 
@@ -14,6 +27,13 @@
       if (finalScore >= band.min) return band.tickets;
     }
     return 0;
+  }
+
+  function eliteMessageForScore(finalScore) {
+    if (finalScore > 60) {
+      return "BEYOND PERFECT! The scoreboard can't contain you.";
+    }
+    return ELITE_MESSAGES[finalScore] || null;
   }
 
   function formatTime(date = new Date()) {
@@ -41,6 +61,57 @@
     }
     document.body.appendChild(layer);
     window.setTimeout(() => layer.remove(), 3600);
+  }
+
+  function launchFireworks(count) {
+    const layer = document.createElement("div");
+    layer.className = "fireworks";
+    layer.setAttribute("aria-hidden", "true");
+    document.body.appendChild(layer);
+    const colors = ["#d6f24a", "#ff5c3a", "#6ef0c2", "#ffc14d", "#f3f0e6", "#7ec8ff"];
+
+    for (let f = 0; f < count; f += 1) {
+      window.setTimeout(() => {
+        const x = 18 + Math.random() * 64;
+        const y = 22 + Math.random() * 38;
+        const rocket = document.createElement("div");
+        rocket.className = "firework-rocket";
+        rocket.style.left = `${x}%`;
+        layer.appendChild(rocket);
+
+        window.setTimeout(() => {
+          rocket.remove();
+          const burst = document.createElement("div");
+          burst.className = "firework-burst";
+          burst.style.left = `${x}%`;
+          burst.style.top = `${y}%`;
+          const sparks = 28 + Math.floor(Math.random() * 12);
+          for (let p = 0; p < sparks; p += 1) {
+            const spark = document.createElement("i");
+            const angle = (p / sparks) * Math.PI * 2 + Math.random() * 0.2;
+            const dist = 70 + Math.random() * 90;
+            spark.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+            spark.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
+            spark.style.setProperty("--c", colors[p % colors.length]);
+            spark.style.animationDelay = `${Math.random() * 40}ms`;
+            burst.appendChild(spark);
+          }
+          // Extra confetti sprinkle from the burst point
+          for (let c = 0; c < 14; c += 1) {
+            const bit = document.createElement("b");
+            bit.style.setProperty("--c", colors[c % colors.length]);
+            bit.style.setProperty("--dx", `${(Math.random() - 0.5) * 160}px`);
+            bit.style.setProperty("--dy", `${40 + Math.random() * 120}px`);
+            bit.style.animationDelay = `${80 + Math.random() * 200}ms`;
+            burst.appendChild(bit);
+          }
+          layer.appendChild(burst);
+          window.setTimeout(() => burst.remove(), 1600);
+        }, 520);
+      }, f * 480);
+    }
+
+    window.setTimeout(() => layer.remove(), count * 480 + 2800);
   }
 
   function flashScreen() {
@@ -277,16 +348,27 @@
       if (tickets === 0) {
         els.ticketMessage.textContent =
           "No tickets this round — reach a score of 20 to earn your first from Mrs. West!";
-      } else if (tickets === 1) {
-        els.ticketMessage.textContent =
-          "You earned 1 ticket. Wave Mrs. West over!";
       } else {
-        els.ticketMessage.textContent = `You earned ${tickets} tickets. Wave Mrs. West over!`;
+        const elite = eliteMessageForScore(finalScore);
+        if (elite) {
+          els.ticketMessage.innerHTML = `<strong class="elite-banner">${elite}</strong><span>You earned ${tickets} tickets. Wave Mrs. West over — she needs to see this!</span>`;
+        } else if (tickets === 1) {
+          els.ticketMessage.textContent =
+            "You earned 1 ticket. Wave Mrs. West over!";
+        } else {
+          els.ticketMessage.textContent = `You earned ${tickets} tickets. Wave Mrs. West over!`;
+        }
       }
       renderReview();
       state.phase = "done";
       show(els.done);
-      if (tickets > 0) burstConfetti(28 + tickets * 8);
+      if (tickets >= 6) {
+        const fireworks = tickets - 5;
+        launchFireworks(fireworks);
+        burstConfetti(40 + tickets * 10);
+      } else if (tickets > 0) {
+        burstConfetti(28 + tickets * 8);
+      }
       flashScreen();
     }
 

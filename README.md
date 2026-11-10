@@ -25,7 +25,12 @@ Score is `correct − incorrect`. Tickets are awarded from that final score:
 | 27–34 | 2       |
 | 35–44 | 3       |
 | 45–49 | 4       |
-| 50+   | 5       |
+| 50–55 | 5       |
+| 56    | 6       |
+| 57    | 7       |
+| 58    | 8       |
+| 59    | 9       |
+| 60+   | 10      |
 
 ## Develop
 

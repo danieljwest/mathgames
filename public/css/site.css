@@ -821,11 +821,72 @@ body.game-page .btn {
   animation: flash 420ms ease;
 }
 
+.elite-banner {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--lime);
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vh, 1.45rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  animation: pop 420ms ease both;
+}
+
+.fireworks {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;
+}
+
+.firework-rocket {
+  position: absolute;
+  bottom: -10px;
+  width: 5px;
+  height: 14px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: linear-gradient(var(--lime), var(--amber));
+  box-shadow: 0 0 10px rgba(214, 242, 74, 0.7);
+  animation: rocket-up 520ms ease-out forwards;
+}
+
+.firework-burst {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.firework-burst i,
+.firework-burst b {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  background: var(--c, var(--lime));
+  box-shadow: 0 0 6px var(--c, var(--lime));
+}
+
+.firework-burst i {
+  width: 7px;
+  height: 7px;
+  animation: spark-out 1.05s ease-out forwards;
+}
+
+.firework-burst b {
+  width: 5px;
+  height: 9px;
+  border-radius: 2px;
+  animation: spark-fall 1.25s ease-in forwards;
+}
+
 .confetti {
   position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  z-index: 35;
 }
 
 .confetti i {
@@ -928,6 +989,39 @@ body.game-page .btn {
   to {
     transform: translateY(110vh) rotate(540deg);
     opacity: 0.2;
+  }
+}
+
+@keyframes rocket-up {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-58vh) scale(0.7);
+    opacity: 0.15;
+  }
+}
+
+@keyframes spark-out {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes spark-fall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(280deg);
+    opacity: 0;
   }
 }
 
