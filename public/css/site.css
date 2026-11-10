@@ -821,6 +821,10 @@ body.game-page .btn {
   animation: flash 420ms ease;
 }
 
+.flash.flash-rainbow.on {
+  animation: flash-rainbow 720ms ease;
+}
+
 .elite-banner {
   display: block;
   margin-bottom: 0.35rem;
@@ -830,6 +834,54 @@ body.game-page .btn {
   letter-spacing: -0.03em;
   line-height: 1.15;
   animation: pop 420ms ease both;
+}
+
+.elite-banner-2 {
+  text-shadow: 0 0 18px rgba(214, 242, 74, 0.35);
+}
+
+.elite-banner-3 {
+  color: var(--amber);
+  text-shadow: 0 0 22px rgba(255, 193, 77, 0.45);
+  animation: pop 420ms ease both, banner-glow 1.4s ease-in-out infinite;
+}
+
+.elite-banner-4 {
+  color: #ffd27a;
+  font-size: clamp(1.12rem, 3vh, 1.55rem);
+  text-shadow: 0 0 26px rgba(255, 122, 217, 0.4), 0 0 18px rgba(255, 193, 77, 0.5);
+  animation: pop 420ms ease both, banner-glow 1.1s ease-in-out infinite;
+}
+
+.elite-banner-5 {
+  background: linear-gradient(90deg, var(--lime), var(--amber), #ff7ad9, var(--mint), var(--lime));
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(1.18rem, 3.2vh, 1.7rem);
+  animation: pop 420ms ease both, banner-shine 2.2s linear infinite;
+}
+
+#screen-done.elite-2 .ticket {
+  box-shadow: 0 10px 24px rgba(255, 193, 77, 0.35);
+}
+
+#screen-done.elite-3 .ticket {
+  animation: ticket-in 420ms ease both, ticket-shimmer 1.2s ease-in-out infinite;
+}
+
+#screen-done.elite-4 .ticket,
+#screen-done.elite-5 .ticket {
+  animation: ticket-in 420ms ease both, ticket-spin 1.6s ease-in-out infinite;
+}
+
+#screen-done.elite-5 {
+  box-shadow: 0 0 0 1px rgba(214, 242, 74, 0.35), 0 0 40px rgba(255, 122, 217, 0.18);
+}
+
+#screen-done.elite-shake {
+  animation: elite-shake 620ms ease;
 }
 
 .fireworks {
@@ -852,10 +904,32 @@ body.game-page .btn {
   animation: rocket-up 520ms ease-out forwards;
 }
 
+.firework-rocket.rocket-hot {
+  width: 6px;
+  height: 18px;
+  background: linear-gradient(#fff6a8, #ff7ad9, var(--coral));
+  box-shadow: 0 0 16px rgba(255, 122, 217, 0.8);
+}
+
 .firework-burst {
   position: absolute;
   width: 0;
   height: 0;
+}
+
+.firework-burst.burst-big i {
+  width: 8px;
+  height: 8px;
+}
+
+.firework-burst.burst-finale i {
+  width: 9px;
+  height: 9px;
+  box-shadow: 0 0 10px var(--c, var(--lime));
+}
+
+.firework-burst.center-finale {
+  filter: saturate(1.2);
 }
 
 .firework-burst i,
@@ -887,6 +961,12 @@ body.game-page .btn {
   pointer-events: none;
   overflow: hidden;
   z-index: 35;
+}
+
+.confetti-mega i.wide {
+  width: 14px;
+  height: 8px;
+  border-radius: 3px;
 }
 
 .confetti i {
@@ -972,6 +1052,42 @@ body.game-page .btn {
   0% { opacity: 0; }
   30% { opacity: 1; }
   100% { opacity: 0; }
+}
+
+@keyframes flash-rainbow {
+  0% { opacity: 0; background: radial-gradient(circle at center, rgba(214, 242, 74, 0.28), transparent 55%); }
+  25% { opacity: 1; background: radial-gradient(circle at 30% 40%, rgba(255, 122, 217, 0.3), transparent 55%); }
+  50% { opacity: 0.85; background: radial-gradient(circle at 70% 35%, rgba(110, 240, 194, 0.3), transparent 55%); }
+  75% { opacity: 1; background: radial-gradient(circle at 50% 50%, rgba(255, 193, 77, 0.32), transparent 55%); }
+  100% { opacity: 0; }
+}
+
+@keyframes banner-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.25); }
+}
+
+@keyframes banner-shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
+}
+
+@keyframes ticket-shimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
+
+@keyframes ticket-spin {
+  0%, 100% { transform: rotate(var(--tilt, -4deg)) scale(1); }
+  50% { transform: rotate(calc(var(--tilt, -4deg) + 8deg)) scale(1.06); }
+}
+
+@keyframes elite-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
 @keyframes ticket-in {

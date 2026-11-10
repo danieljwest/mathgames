@@ -47,83 +47,148 @@
     });
   }
 
-  function burstConfetti(count = 36) {
+  function burstConfetti(count = 36, { mega = false } = {}) {
     const layer = document.createElement("div");
-    layer.className = "confetti";
-    const colors = ["#d6f24a", "#ff5c3a", "#6ef0c2", "#ffc14d", "#f3f0e6"];
+    layer.className = mega ? "confetti confetti-mega" : "confetti";
+    const colors = ["#d6f24a", "#ff5c3a", "#6ef0c2", "#ffc14d", "#f3f0e6", "#7ec8ff", "#ff7ad9"];
     for (let i = 0; i < count; i += 1) {
       const piece = document.createElement("i");
       piece.style.left = `${Math.random() * 100}%`;
       piece.style.setProperty("--c", colors[i % colors.length]);
-      piece.style.animationDuration = `${1.6 + Math.random() * 1.8}s`;
-      piece.style.animationDelay = `${Math.random() * 0.35}s`;
+      piece.style.animationDuration = `${1.4 + Math.random() * (mega ? 2.4 : 1.8)}s`;
+      piece.style.animationDelay = `${Math.random() * (mega ? 0.8 : 0.35)}s`;
+      if (mega && Math.random() < 0.35) piece.classList.add("wide");
       layer.appendChild(piece);
     }
     document.body.appendChild(layer);
-    window.setTimeout(() => layer.remove(), 3600);
+    window.setTimeout(() => layer.remove(), mega ? 4800 : 3600);
   }
 
-  function launchFireworks(count) {
+  function launchFireworks(count, { intensity = 1 } = {}) {
     const layer = document.createElement("div");
     layer.className = "fireworks";
     layer.setAttribute("aria-hidden", "true");
     document.body.appendChild(layer);
-    const colors = ["#d6f24a", "#ff5c3a", "#6ef0c2", "#ffc14d", "#f3f0e6", "#7ec8ff"];
+    const colors = ["#d6f24a", "#ff5c3a", "#6ef0c2", "#ffc14d", "#f3f0e6", "#7ec8ff", "#ff7ad9"];
+    const sparkBase = 24 + intensity * 8;
+    const distBase = 60 + intensity * 18;
 
     for (let f = 0; f < count; f += 1) {
       window.setTimeout(() => {
-        const x = 18 + Math.random() * 64;
-        const y = 22 + Math.random() * 38;
+        const x = 14 + Math.random() * 72;
+        const y = 18 + Math.random() * 42;
         const rocket = document.createElement("div");
         rocket.className = "firework-rocket";
         rocket.style.left = `${x}%`;
+        if (intensity >= 4) rocket.classList.add("rocket-hot");
         layer.appendChild(rocket);
 
         window.setTimeout(() => {
           rocket.remove();
           const burst = document.createElement("div");
           burst.className = "firework-burst";
+          if (intensity >= 3) burst.classList.add("burst-big");
+          if (intensity >= 5) burst.classList.add("burst-finale");
           burst.style.left = `${x}%`;
           burst.style.top = `${y}%`;
-          const sparks = 28 + Math.floor(Math.random() * 12);
+          const sparks = sparkBase + Math.floor(Math.random() * 14);
           for (let p = 0; p < sparks; p += 1) {
             const spark = document.createElement("i");
-            const angle = (p / sparks) * Math.PI * 2 + Math.random() * 0.2;
-            const dist = 70 + Math.random() * 90;
+            const angle = (p / sparks) * Math.PI * 2 + Math.random() * 0.25;
+            const dist = distBase + Math.random() * (50 + intensity * 20);
             spark.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
             spark.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
             spark.style.setProperty("--c", colors[p % colors.length]);
-            spark.style.animationDelay = `${Math.random() * 40}ms`;
+            spark.style.animationDelay = `${Math.random() * 50}ms`;
             burst.appendChild(spark);
           }
-          // Extra confetti sprinkle from the burst point
-          for (let c = 0; c < 14; c += 1) {
+          const bits = 10 + intensity * 4;
+          for (let c = 0; c < bits; c += 1) {
             const bit = document.createElement("b");
             bit.style.setProperty("--c", colors[c % colors.length]);
-            bit.style.setProperty("--dx", `${(Math.random() - 0.5) * 160}px`);
-            bit.style.setProperty("--dy", `${40 + Math.random() * 120}px`);
-            bit.style.animationDelay = `${80 + Math.random() * 200}ms`;
+            bit.style.setProperty("--dx", `${(Math.random() - 0.5) * (140 + intensity * 30)}px`);
+            bit.style.setProperty("--dy", `${30 + Math.random() * (100 + intensity * 20)}px`);
+            bit.style.animationDelay = `${60 + Math.random() * 220}ms`;
             burst.appendChild(bit);
           }
           layer.appendChild(burst);
-          window.setTimeout(() => burst.remove(), 1600);
+          window.setTimeout(() => burst.remove(), 1800);
         }, 520);
-      }, f * 480);
+      }, f * (intensity >= 5 ? 380 : 480));
     }
 
-    window.setTimeout(() => layer.remove(), count * 480 + 2800);
+    // Perfect-tier: one big center finale after the rockets
+    if (intensity >= 5) {
+      window.setTimeout(() => {
+        const finale = document.createElement("div");
+        finale.className = "firework-burst burst-finale center-finale";
+        finale.style.left = "50%";
+        finale.style.top = "36%";
+        for (let p = 0; p < 56; p += 1) {
+          const spark = document.createElement("i");
+          const angle = (p / 56) * Math.PI * 2;
+          const dist = 110 + Math.random() * 100;
+          spark.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+          spark.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
+          spark.style.setProperty("--c", colors[p % colors.length]);
+          finale.appendChild(spark);
+        }
+        layer.appendChild(finale);
+        window.setTimeout(() => finale.remove(), 2000);
+      }, count * 380 + 200);
+    }
+
+    window.setTimeout(() => layer.remove(), count * 500 + 3600);
   }
 
-  function flashScreen() {
+  function flashScreen({ rainbow = false, pulses = 1 } = {}) {
     let flash = document.querySelector(".flash");
     if (!flash) {
       flash = document.createElement("div");
       flash.className = "flash";
       document.body.appendChild(flash);
     }
-    flash.classList.remove("on");
-    void flash.offsetWidth;
-    flash.classList.add("on");
+    flash.classList.toggle("flash-rainbow", rainbow);
+    for (let i = 0; i < pulses; i += 1) {
+      window.setTimeout(() => {
+        flash.classList.remove("on");
+        void flash.offsetWidth;
+        flash.classList.add("on");
+      }, i * 280);
+    }
+  }
+
+  function celebrateElite(tickets) {
+    const intensity = Math.min(5, Math.max(1, tickets - 5));
+    const done = document.getElementById("screen-done");
+    done?.classList.remove(
+      "elite-1",
+      "elite-2",
+      "elite-3",
+      "elite-4",
+      "elite-5"
+    );
+    done?.classList.add(`elite-${intensity}`);
+
+    launchFireworks(intensity, { intensity });
+    burstConfetti(36 + intensity * 18, { mega: intensity >= 3 });
+
+    if (intensity >= 2) {
+      window.setTimeout(() => burstConfetti(24 + intensity * 10, { mega: intensity >= 4 }), 700);
+    }
+    if (intensity >= 4) {
+      window.setTimeout(() => burstConfetti(50, { mega: true }), 1400);
+    }
+
+    flashScreen({
+      rainbow: intensity >= 4,
+      pulses: intensity >= 5 ? 3 : intensity >= 3 ? 2 : 1,
+    });
+
+    if (intensity >= 3) {
+      done?.classList.add("elite-shake");
+      window.setTimeout(() => done?.classList.remove("elite-shake"), 700);
+    }
   }
 
   function createChallenge(config) {
@@ -321,6 +386,14 @@
       state.running = false;
       state.phase = "ready";
       state.accepting = true;
+      document.getElementById("screen-done")?.classList.remove(
+        "elite-1",
+        "elite-2",
+        "elite-3",
+        "elite-4",
+        "elite-5",
+        "elite-shake"
+      );
       show(els.ready);
       window.setTimeout(() => document.body.focus(), 0);
     }
@@ -351,7 +424,8 @@
       } else {
         const elite = eliteMessageForScore(finalScore);
         if (elite) {
-          els.ticketMessage.innerHTML = `<strong class="elite-banner">${elite}</strong><span>You earned ${tickets} tickets. Wave Mrs. West over — she needs to see this!</span>`;
+          const tier = Math.min(5, tickets - 5);
+          els.ticketMessage.innerHTML = `<strong class="elite-banner elite-banner-${tier}">${elite}</strong><span>You earned ${tickets} tickets. Wave Mrs. West over — she needs to see this!</span>`;
         } else if (tickets === 1) {
           els.ticketMessage.textContent =
             "You earned 1 ticket. Wave Mrs. West over!";
@@ -362,14 +436,22 @@
       renderReview();
       state.phase = "done";
       show(els.done);
+      document.getElementById("screen-done")?.classList.remove(
+        "elite-1",
+        "elite-2",
+        "elite-3",
+        "elite-4",
+        "elite-5",
+        "elite-shake"
+      );
       if (tickets >= 6) {
-        const fireworks = tickets - 5;
-        launchFireworks(fireworks);
-        burstConfetti(40 + tickets * 10);
+        celebrateElite(tickets);
       } else if (tickets > 0) {
         burstConfetti(28 + tickets * 8);
+        flashScreen();
+      } else {
+        flashScreen();
       }
-      flashScreen();
     }
 
     function tick() {
